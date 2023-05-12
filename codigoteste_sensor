@@ -1,0 +1,58 @@
+#include <ESP32Servo.h>
+
+
+// Nova biblioteca
+#include <NewPing.h>
+// 
+
+//Novos pinos
+const int trigPin = 12;
+const int echoPin = 15;
+//
+
+//Criar onbjeto
+NewPing sensor(trigPin, echoPin);
+//
+
+
+const int servoPin1 = 14;
+const int servoPin2 = 13;
+Servo servo1;
+Servo servo2;
+
+int angle = 0;
+int angleStep = 5;
+
+int angleMin = 0;
+int angleMax = 90;
+
+void setup() {
+    Serial.begin(115200);
+    servo1.attach(servoPin1);
+    servo2.attach(servoPin2);
+}
+
+void loop() {
+    //define distancia
+    unsigned int distancia = sensor.ping_cm();
+    //
+    //esse if ta englobando todo o resto do código, se ele da
+    //falso, então os motores param.
+    if (distancia <= 100){
+      for (int posDegrees = angleMin; posDegrees <= angleMax; posDegrees += angleStep) {
+          servo1.write(posDegrees);
+          Serial.println(posDegrees);
+          servo2.write(posDegrees);
+          Serial.println(posDegrees);
+          delay(20);
+      }
+
+      for (int posDegrees = angleMax; posDegrees >= angleMin; posDegrees -= angleStep) {
+          servo1.write(posDegrees);
+          Serial.println(posDegrees);
+          servo2.write(posDegrees);
+          Serial.println(posDegrees);
+          delay(20);
+      }
+    }
+}
