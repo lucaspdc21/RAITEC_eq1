@@ -1,7 +1,7 @@
 #include <ESP32Servo.h>
 
 const int servoPin1 = 14;
-const int buttonPin = 2;
+const int botaoPin = 2;
 
 Servo servo1;
 
@@ -12,29 +12,30 @@ int angleMax = 90;
 
 bool porta_aberta = false;
 bool botao_pressionado = false;
+unsigned long tempo_abertura = 0;
 
 void setup() {
     Serial.begin(115200);
     servo1.attach(servoPin1);
-    pinMode(buttonPin, INPUT_PULLUP);
+    pinMode(botaoPin, INPUT_PULLUP);
 }
 
 void loop() {
-    lerBotao();
+    botao();
 
     if (botao_pressionado && !porta_aberta) {
         abrirPorta();
-    } else if (botao_pressionado && porta_aberta) {
+    } else if (porta_aberta && (millis() - tempo_abertura >= 10000)) {
         fecharPorta();
     }
-    
+    delay(10);
 }
 
-void lerBotao() {
-    bool estadoBotao = digitalRead(buttonPin);
+void botao() {
+    bool estadoBotao = digitalRead(botaoPin);
     if (estadoBotao == LOW) {
-        delay(50); // Pequeno atraso para evitar falsos positivos
-        estadoBotao = digitalRead(buttonPin);
+        delay(50); 
+        estadoBotao = digitalRead(botaoPin);
         if (estadoBotao == LOW) {
             botao_pressionado = true;
         }
@@ -50,6 +51,7 @@ void abrirPorta() {
     }
     porta_aberta = true;
     botao_pressionado = false;
+    tempo_abertura = millis();
 }
 
 void fecharPorta() {
