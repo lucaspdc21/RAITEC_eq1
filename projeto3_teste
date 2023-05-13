@@ -1,1 +1,62 @@
+#include <ESP32Servo.h>
 
+const int servoPin1 = 14;
+const int buttonPin = 2;
+
+Servo servo1;
+
+int angle = 0;
+int angleStep = 5;
+int angleMin = 0;
+int angleMax = 90;
+
+bool porta_aberta = false;
+bool botao_pressionado = false;
+
+void setup() {
+    Serial.begin(115200);
+    servo1.attach(servoPin1);
+    pinMode(buttonPin, INPUT_PULLUP);
+}
+
+void loop() {
+    lerBotao();
+
+    if (botao_pressionado && !porta_aberta) {
+        abrirPorta();
+    } else if (botao_pressionado && porta_aberta) {
+        fecharPorta();
+    }
+    
+}
+
+void lerBotao() {
+    bool estadoBotao = digitalRead(buttonPin);
+    if (estadoBotao == LOW) {
+        delay(50); // Pequeno atraso para evitar falsos positivos
+        estadoBotao = digitalRead(buttonPin);
+        if (estadoBotao == LOW) {
+            botao_pressionado = true;
+        }
+    } else {
+        botao_pressionado = false;
+    }
+}
+
+void abrirPorta() {
+    for (int posDegrees = angleMin; posDegrees <= angleMax; posDegrees += angleStep) {
+        servo1.write(posDegrees);
+        delay(20);
+    }
+    porta_aberta = true;
+    botao_pressionado = false;
+}
+
+void fecharPorta() {
+    for (int posDegrees = angleMax; posDegrees >= angleMin; posDegrees -= angleStep) {
+        servo1.write(posDegrees);
+        delay(20);
+    }
+    porta_aberta = false;
+    botao_pressionado = false;
+}
