@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-servo", "id": "servo1", "top": 0.88, "left": -251.19, "attrs": {} },
+    { "type": "wokwi-servo", "id": "servo2", "top": -91.77, "left": -244.31, "attrs": {} },
+    { "type": "wokwi-servo", "id": "servo3", "top": 113.5, "left": -264.71, "attrs": {} },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": -130.64,
+      "left": 112.07,
+      "attrs": { "color": "green" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [
+      "servo1:V+",
+      "esp:3V3",
+      "red",
+      [ "h-153.14", "v196.93", "h391.11", "v1.18", "h173.57", "v-99.99" ]
+    ],
+    [
+      "servo3:V+",
+      "esp:3V3",
+      "red",
+      [ "h-139.93", "v87.44", "h472.8", "v-1.18", "h93.1", "v-100.76" ]
+    ],
+    [ "servo2:V+", "esp:3V3", "red", [ "v-2.12", "h-160.02", "v292.34", "h564.68", "v-99.45" ] ],
+    [ "servo1:GND", "esp:GND.2", "#8f4814", [ "h-170.12", "v195.46", "h426.31" ] ],
+    [ "servo3:GND", "esp:GND.2", "#8f4814", [ "h-154.52", "v82.85", "h424.23" ] ],
+    [ "servo2:GND", "esp:GND.2", "#8f4814", [ "h-175.96", "v288.12", "h425.27" ] ],
+    [ "servo2:PWM", "esp:D14", "green", [ "h218.92", "v142.77" ] ],
+    [ "servo1:PWM", "esp:D14", "green", [ "h225", "v50.12" ] ],
+    [ "servo3:PWM", "esp:D14", "green", [ "h238.09", "v-62.5" ] ],
+    [ "btn1:2.r", "esp:D2", "green", [ "h0" ] ],
+    [ "btn1:1.l", "esp:GND.1", "green", [ "h175.35", "v253.92" ] ]
+  ],
+  "dependencies": {}
+}
