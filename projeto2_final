@@ -1,0 +1,85 @@
+#include <ESP32Servo.h>
+
+#define servo1_pin 12
+
+#define switch1_pin 2
+#define switch2_pin 4
+#define switch3_pin 15
+#define switch4_pin 5
+#define switch5_pin 18
+#define switch6_pin 19
+
+int angle = 0;
+int angleStep = 5;
+int angleMin = 0;
+int angleMax = 90;
+
+#define servo_aberto 90
+#define servo_fechado 0
+Servo servo1;
+
+int senha_correta[] = {1, 1, 0, 0, 1, 1};
+int senha_digitada[6];
+bool senha_correta_inserida = false;
+unsigned long tempo_alteracao_senha = 0;
+
+void setup() {
+  pinMode(switch1_pin, INPUT_PULLUP);
+  pinMode(switch2_pin, INPUT_PULLUP);
+  pinMode(switch3_pin, INPUT_PULLUP);
+  pinMode(switch4_pin, INPUT_PULLUP);
+  pinMode(switch5_pin, INPUT_PULLUP);
+  pinMode(switch6_pin, INPUT_PULLUP);
+
+  servo1.attach(servo1_pin);
+  fecharServos();
+}
+
+void loop() {
+  lerSenhaDigitada();
+
+  if (verificarSenha()) {
+    if (!senha_correta_inserida) {
+      senha_correta_inserida = true;
+      abrirServos();
+    }
+    tempo_alteracao_senha = millis();
+  } else {
+    if (senha_correta_inserida && (millis() - tempo_alteracao_senha >= 2000)) {
+      senha_correta_inserida = false;
+      fecharServos();
+    }
+  }
+}
+
+void lerSenhaDigitada() {
+  senha_digitada[0] = digitalRead(switch1_pin);
+  senha_digitada[1] = digitalRead(switch2_pin);
+  senha_digitada[2] = digitalRead(switch3_pin);
+  senha_digitada[3] = digitalRead(switch4_pin);
+  senha_digitada[4] = digitalRead(switch5_pin);
+  senha_digitada[5] = digitalRead(switch6_pin);
+}
+
+bool verificarSenha() {
+  for (int i = 0; i < 6; i++) {
+    if (senha_digitada[i] != senha_correta[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void abrirServos() {
+  for (int posDegrees = angleMin; posDegrees <= angleMax; posDegrees += angleStep) {
+    servo1.write(posDegrees);
+    delay(20);
+  }
+}
+
+void fecharServos() {
+  for (int posDegrees = angleMax; posDegrees >= angleMin; posDegrees -= angleStep) {
+    servo1.write(posDegrees);
+    delay(20);
+  }
+}
