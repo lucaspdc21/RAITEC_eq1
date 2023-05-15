@@ -1,7 +1,4 @@
 #include <ESP32Servo.h>
-
-const int servoPin1 = 14;
-const int bot#include <ESP32Servo.h>
 #include <LiquidCrystal.h>
 
 const int servoPin1 = 14;
@@ -93,65 +90,4 @@ void atualizarDisplay(unsigned long segundos_restantes) {
     lcd.setCursor(0, 0);
     lcd.print(segundos_restantes);
     lcd.print("s ");
-}
-aoPin = 2;
-
-Servo servo1;
-
-int angle = 0;
-int angleStep = 5;
-int angleMin = 0;
-int angleMax = 90;
-
-bool porta_aberta = false;
-bool botao_pressionado = false;
-unsigned long tempo_abertura = 0;
-
-void setup() {
-    Serial.begin(115200);
-    servo1.attach(servoPin1);
-    pinMode(botaoPin, INPUT_PULLUP);
-}
-
-void loop() {
-    botao();
-
-    if (botao_pressionado && !porta_aberta) {
-        abrirPorta();
-    } else if (porta_aberta && (millis() - tempo_abertura >= 10000)) {
-        fecharPorta();
-    }
-    delay(10);
-}
-
-void botao() {
-    bool estadoBotao = digitalRead(botaoPin);
-    if (estadoBotao == LOW) {
-        delay(50); 
-        estadoBotao = digitalRead(botaoPin);
-        if (estadoBotao == LOW) {
-            botao_pressionado = true;
-        }
-    } else {
-        botao_pressionado = false;
-    }
-}
-
-void abrirPorta() {
-    for (int posDegrees = angleMin; posDegrees <= angleMax; posDegrees += angleStep) {
-        servo1.write(posDegrees);
-        delay(20);
-    }
-    porta_aberta = true;
-    botao_pressionado = false;
-    tempo_abertura = millis();
-}
-
-void fecharPorta() {
-    for (int posDegrees = angleMax; posDegrees >= angleMin; posDegrees -= angleStep) {
-        servo1.write(posDegrees);
-        delay(20);
-    }
-    porta_aberta = false;
-    botao_pressionado = false;
 }
