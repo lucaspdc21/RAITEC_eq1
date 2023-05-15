@@ -1,7 +1,100 @@
 #include <ESP32Servo.h>
 
 const int servoPin1 = 14;
-const int botaoPin = 2;
+const int bot#include <ESP32Servo.h>
+#include <LiquidCrystal.h>
+
+const int servoPin1 = 14;
+const int botaoPin = 15;
+const int rsPin = 12;
+const int enablePin = 13;
+const int d4Pin = 5;
+const int d5Pin = 4;
+const int d6Pin = 18;
+const int d7Pin = 2;
+
+Servo servo1;
+LiquidCrystal lcd(rsPin, enablePin, d4Pin, d5Pin, d6Pin, d7Pin);
+
+int angle = 0;
+int angleStep = 5;
+int angleMin = 0;
+int angleMax = 90;
+
+bool porta_aberta = false;
+bool botao_pressionado = false;
+unsigned long tempo_abertura = 0;
+unsigned long tempo_anterior = 0;
+unsigned long tempo_total = 0;
+unsigned long tempo_restante = 0;
+
+void setup() {
+    Serial.begin(115200);
+    servo1.attach(servoPin1);
+    servo1.write(angleMin);
+    pinMode(botaoPin, INPUT_PULLUP);
+    lcd.begin(16, 2);
+}
+
+void loop() {
+    botao();
+
+    if (botao_pressionado && !porta_aberta) {
+        abrirPorta();
+    } else if (porta_aberta && (millis() - tempo_abertura >= 5000)) {
+        fecharPorta();
+    }
+
+    if (porta_aberta) {
+        unsigned long tempo_atual = millis();
+        tempo_total = (tempo_atual - tempo_abertura) / 1000;
+        tempo_restante = 5 - tempo_total;
+        atualizarDisplay(tempo_restante);
+    }
+
+    delay(10);
+}
+
+void botao() {
+    bool estadoBotao = digitalRead(botaoPin);
+    if (estadoBotao == LOW) {
+        delay(50);
+        estadoBotao = digitalRead(botaoPin);
+        if (estadoBotao == LOW) {
+            botao_pressionado = true;
+        }
+    } else {
+        botao_pressionado = false;
+    }
+}
+
+void abrirPorta() {
+    for (int posDegrees = angleMin; posDegrees <= angleMax; posDegrees += angleStep) {
+        servo1.write(posDegrees);
+        delay(20);
+    }
+    porta_aberta = true;
+    botao_pressionado = false;
+    tempo_abertura = millis();
+    tempo_restante = 5;
+}
+
+void fecharPorta() {
+    for (int posDegrees = angleMax; posDegrees >= angleMin; posDegrees -= angleStep) {
+        servo1.write(posDegrees);
+        delay(20);
+    }
+    porta_aberta = false;
+    botao_pressionado = false;
+    lcd.clear();
+}
+
+void atualizarDisplay(unsigned long segundos_restantes) {
+    lcd.setCursor(0, 0);
+    lcd.print(segundos_restantes);
+    lcd.print("s ");
+}
+aoPin = 2;
 
 Servo servo1;
 
