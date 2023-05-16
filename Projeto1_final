@@ -1,11 +1,11 @@
 #include <ESP32Servo.h>
 #include <NewPing.h>
 
-const int trigPin = 19;
-const int echoPin = 21;
+const int trigPin = 22;
+const int echoPin = 23;
 NewPing sensor(trigPin, echoPin);
 
-const int servoPin1 = 12;
+const int servoPin1 = 21;
 
 Servo servo1;
 
