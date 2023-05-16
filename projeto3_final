@@ -1,14 +1,14 @@
 #include <ESP32Servo.h>
 #include <LiquidCrystal.h>
 
-const int servoPin1 = 14;
-const int botaoPin = 15;
-const int rsPin = 12;
-const int enablePin = 13;
-const int d4Pin = 5;
-const int d5Pin = 4;
-const int d6Pin = 18;
-const int d7Pin = 2;
+const int servoPin1 = 19;
+const int botaoPin = 12;
+const int rsPin = 14;
+const int enablePin = 27;
+const int d4Pin = 26;
+const int d5Pin = 25;
+const int d6Pin = 32;
+const int d7Pin = 33;
 
 Servo servo1;
 LiquidCrystal lcd(rsPin, enablePin, d4Pin, d5Pin, d6Pin, d7Pin);
