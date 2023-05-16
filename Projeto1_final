@@ -6,42 +6,35 @@ const int echoPin = 21;
 NewPing sensor(trigPin, echoPin);
 
 const int servoPin1 = 12;
-const int servoPin2 = 13;
-const int servoPin3 = 14;
+
 Servo servo1;
-Servo servo2;
-Servo servo3;
 
 int angle = 0;
 int angleStep = 5;
 int angleMin = 0;
 int angleMax = 90;
 
-bool porta_aberta = false;  // Estado inicial da porta
+bool porta_aberta = false;  
 
 void setup() {
     Serial.begin(115200);
     servo1.attach(servoPin1);
-    servo2.attach(servoPin2);
-    servo3.attach(servoPin3);
+
 }
 
 void loop() {
     unsigned int distancia = sensor.ping_cm();
 
-    if (distancia <= 100 && !porta_aberta) {
+    if (distancia <= 102 && !porta_aberta) {
         abrirPorta();
-    } else if (distancia > 100 && porta_aberta) {  
+    } else if (distancia > 103 && porta_aberta) {  
         fecharPorta();
     }
-    delay(1000);
 }
 
 void abrirPorta() {
     for (int posDegrees = angleMin; posDegrees <= angleMax; posDegrees += angleStep) {
         servo1.write(posDegrees);
-        servo2.write(posDegrees);
-        servo3.write(posDegrees);
         delay(20);
     }
     porta_aberta = true; 
@@ -50,8 +43,7 @@ void abrirPorta() {
 void fecharPorta() {
     for (int posDegrees = angleMax; posDegrees >= angleMin; posDegrees -= angleStep) {
         servo1.write(posDegrees);
-        servo2.write(posDegrees);
-        servo3.write(posDegrees);
+
         delay(20);
     }
     porta_aberta = false;  
