@@ -1,0 +1,193 @@
+#include <ESP32Servo.h>
+#include <NewPing.h>
+#include <LiquidCrystal.h>
+
+const int trigPin = 22;
+const int echoPin = 23;
+NewPing sensor(trigPin, echoPin);
+const int servoPin1 = 21;
+
+
+Servo servo1;
+Servo servo2;
+Servo servo3;
+int angle = 0;
+int angleStep = 5;
+int angleMin = 0;
+int angleMax = 90;
+
+
+
+#define servo2_pin 18
+#define switch1_pin 17
+#define switch2_pin 16
+#define switch3_pin 4
+#define switch4_pin 0
+#define switch5_pin 2
+#define switch6_pin 15
+Servo servo1;
+int senha_correta[] = {1, 1, 0, 0, 1, 1};
+int senha_digitada[6];
+bool senha_correta_inserida = false;
+unsigned long tempo_alteracao_senha = 0;
+
+
+
+const int servoPin3 = 19;
+const int botaoPin = 12;
+const int rsPin = 14;
+const int enablePin = 27;
+const int d4Pin = 26;
+const int d5Pin = 25;
+const int d6Pin = 32;
+const int d7Pin = 33;
+
+bool porta_aberta = false;  
+
+void setup() {
+    Serial.begin(115200);
+    servo1.attach(servoPin1);
+    servo2.attach(servo2_pin);
+    servo3.attach(servoPin3);
+}
+
+void loop() {
+    unsigned int distancia = sensor.ping_cm();
+    if (distancia <= 102 && !porta_aberta) {
+        abrirPorta1();
+    } else if (distancia > 103 && porta_aberta) {  
+        fecharPorta1();
+    }
+
+
+  lerSenhaDigitada();
+  if (verificarSenha()) {
+    if (!senha_correta_inserida) {
+      senha_correta_inserida = true;
+      abrirServos2();
+    }
+    tempo_alteracao_senha = millis();
+  } else {
+    if (senha_correta_inserida && (millis() - tempo_alteracao_senha >= 2000)) {
+      senha_correta_inserida = false;
+      fecharServos22();
+    }
+  }
+
+
+  botao();
+
+  if (botao_pressionado && !porta_aberta) {
+      abrirPorta3();
+  } else if (porta_aberta && (millis() - tempo_abertura >= 5000)) {
+      fecharPorta3();
+  }
+
+  if (porta_aberta) {
+      unsigned long tempo_atual = millis();
+      tempo_total = (tempo_atual - tempo_abertura) / 1000;
+      tempo_restante = 5 - tempo_total;
+      atualizarDisplay(tempo_restante);
+  }
+
+
+
+}
+
+void abrirPorta1() {
+    for (int posDegrees = angleMin; posDegrees <= angleMax; posDegrees += angleStep) {
+        servo1.write(posDegrees);
+        delay(20);
+    }
+    porta_aberta = true; 
+}
+
+void fecharPorta1() {
+    for (int posDegrees = angleMax; posDegrees >= angleMin; posDegrees -= angleStep) {
+        servo1.write(posDegrees);
+
+        delay(20);
+    }
+    porta_aberta = false;  
+}
+
+
+
+
+
+void lerSenhaDigitada() {
+  senha_digitada[0] = digitalRead(switch1_pin);
+  senha_digitada[1] = digitalRead(switch2_pin);
+  senha_digitada[2] = digitalRead(switch3_pin);
+  senha_digitada[3] = digitalRead(switch4_pin);
+  senha_digitada[4] = digitalRead(switch5_pin);
+  senha_digitada[5] = digitalRead(switch6_pin);
+}
+
+bool verificarSenha() {
+  for (int i = 0; i < 6; i++) {
+    if (senha_digitada[i] != senha_correta[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void abrirServos2() {
+  for (int posDegrees = angleMin; posDegrees <= angleMax; posDegrees += angleStep) {
+    servo1.write(posDegrees);
+    delay(20);
+  }
+}
+
+void fecharServos2() {
+  for (int posDegrees = angleMax; posDegrees >= angleMin; posDegrees -= angleStep) {
+    servo1.write(posDegrees);
+    delay(20);
+  }
+}
+
+
+
+
+
+
+void botao() {
+    bool estadoBotao = digitalRead(botaoPin);
+    if (estadoBotao == LOW) {
+        delay(50);
+        estadoBotao = digitalRead(botaoPin);
+        if (estadoBotao == LOW) {
+            botao_pressionado = true;
+        }
+    } else {
+        botao_pressionado = false;
+    }
+}
+
+void abrirPorta3() {
+    for (int posDegrees = angleMin; posDegrees <= angleMax; posDegrees += angleStep) {
+        servo1.write(posDegrees);
+        delay(20);
+    }
+    porta_aberta = true;
+    botao_pressionado = false;
+    tempo_abertura = millis();
+    tempo_restante = 5;
+}
+
+void fecharPorta3() {
+    for (int posDegrees = angleMax; posDegrees >= angleMin; posDegrees -= angleStep) {
+        servo1.write(posDegrees);
+        delay(20);
+    }
+    porta_aberta = false;
+    botao_pressionado = false;
+    lcd.clear();
+}
+
+void atualizarDisplay(unsigned long segundos_restantes) {
+    lcd.setCursor(0, 0);
+    lcd.print(segundos_restantes);
+    lcd.print("s ");
+}
