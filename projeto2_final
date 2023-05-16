@@ -1,13 +1,13 @@
 #include <ESP32Servo.h>
 
-#define servo1_pin 12
+#define servo1_pin 18
 
-#define switch1_pin 2
-#define switch2_pin 4
-#define switch3_pin 15
-#define switch4_pin 5
-#define switch5_pin 18
-#define switch6_pin 19
+#define switch1_pin 17
+#define switch2_pin 16
+#define switch3_pin 4
+#define switch4_pin 0
+#define switch5_pin 2
+#define switch6_pin 15
 
 int angle = 0;
 int angleStep = 5;
