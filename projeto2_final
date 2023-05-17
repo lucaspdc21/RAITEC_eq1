@@ -30,7 +30,7 @@ void setup() {
   pinMode(switch4_pin, INPUT_PULLUP);
   pinMode(switch5_pin, INPUT_PULLUP);
   pinMode(switch6_pin, INPUT_PULLUP);
-
+  Serial.begin(115200);
   servo1.attach(servo1_pin);
   fecharServos();
 }
